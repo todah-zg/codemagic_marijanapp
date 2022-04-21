@@ -58,10 +58,10 @@ workflows:
             - androidTesters
           artifact_type: 'apk'
       # See the following link for details about email publishing - https://docs.codemagic.io/yaml-publishing/email
-      email:
-        recipients:
-          - user_1@example.com
-          - user_2@example.com
-        notify:
-          success: true # To receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
+  #    email:
+  #      recipients:
+  #        - user_1@example.com
+  #        - user_2@example.com
+  #      notify:
+  #        success: true # To receive a notification when a build succeeds
+  #        failure: false # To not receive a notification when a build fails
