@@ -41,13 +41,25 @@ workflows:
       - name: Build APK with Flutter
         script: |
           cd . && flutter build apk --release --build-name=1.0.0 --build-number=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks "$GOOGLE_PLAY_TRACK") + 1))
+      - name: Set up Firebase properties
+        script: |
+          echo $ANDROID_FIREBASE_CONFIG | base64 --decode > $CM_BUILD_DIR/android/app/google-services.json
+          echo Decoded google-services.json! Here is the directory after.
+          ls $CM_BUILD_DIR/android/app
     artifacts:
       - build/**/outputs/bundle/**/*.aab
       - build/**/outputs/apk/**/*.apk
       - build/**/outputs/**/mapping.txt
       - flutter_drive.log
     publishing:
-      # See the following link for detai ls about email publishing - https://docs.codemagic.io/yaml-publishing/email
+      firebase:
+        firebase_token: $FIREBASE_TOKEN
+        android:
+          app_id: 1:347043928061:android:1cdbf0c292fe8bc0d1eb94
+          groups:
+            - androidTesters
+          artifact_type: 'apk'
+      # See the following link for details about email publishing - https://docs.codemagic.io/yaml-publishing/email
       email:
         recipients:
           - user_1@example.com
@@ -55,14 +67,3 @@ workflows:
         notify:
           success: true # To receive a notification when a build succeeds
           failure: false # To not receive a notification when a build fails
-      slack:
-        # See the following link about how to connect your Slack account - https://docs.codemagic.io/yaml-publishing/slack
-        channel: '#builds'
-        notify_on_build_start: true # To receive a notification when a build starts
-        notify:
-          success: true # To receive a notification when a build succeeds
-          failure: false # To not receive a notification when a build fails
-      google_play:
-        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-        track: $GOOGLE_PLAY_TRACK
-        in_app_update_priority: 0
