@@ -38,7 +38,7 @@ workflows:
         ignore_failure: true
       - name: Build APK with Flutter
         script: |
-          cd . && flutter build apk --release --build-name=1.0.0 --build-number=1.0.5
+          cd . && flutter build apk --release --build-name=1.0.5 --build-number=1
       - name: Set up Firebase properties
         script: |
           echo $ANDROID_FIREBASE_CONFIG | base64 --decode > $CM_BUILD_DIR/android/app/google-services.json
