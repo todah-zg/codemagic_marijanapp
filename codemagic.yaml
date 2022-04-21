@@ -36,14 +36,14 @@ workflows:
         script: |
           cd . && flutter test
         ignore_failure: true
-      - name: Build APK with Flutter
-        script: |
-          cd . && flutter build apk --release --build-name=1.0.5 --build-number=1
       - name: Set up Firebase properties
         script: |
           echo $ANDROID_FIREBASE_CONFIG | base64 --decode > $CM_BUILD_DIR/android/app/google-services.json
           echo Decoded google-services.json! Here is the directory after.
           ls $CM_BUILD_DIR/android/app
+      - name: Build APK with Flutter
+        script: |
+          cd . && flutter build apk --release --build-name=1.0.5 --build-number=1
     artifacts:
       - build/**/outputs/bundle/**/*.aab
       - build/**/outputs/apk/**/*.apk
