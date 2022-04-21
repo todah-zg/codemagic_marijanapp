@@ -46,7 +46,8 @@ android {
 
     defaultConfig {
         applicationId "io.codemagic.marijanapp"
-        minSdkVersion flutter.minSdkVersion
+        // minSdkVersion flutter.minSdkVersion
+        minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
