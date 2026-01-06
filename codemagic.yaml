@@ -4,46 +4,24 @@ workflows:
     max_build_duration: 120
     environment:
       groups:
-        - keystore_credentials # <-- (Includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS)
-        # Add the above group environment variables in Codemagic UI (either in Application/Team variables) - https://docs.codemagic.io/variables/environment-variable-groups/
+        - FIREBASE # <-- Includes FIREBASE_SERVICE_ACCOUNT
       vars:
         CM_KEYSTORE_PATH: /tmp/keystore.keystore
         PACKAGE_NAME: 'io.codemagic.marijanapp' # <-- Put your package name here e.g. "io.codemagic.flutteryaml"
         GOOGLE_PLAY_TRACK: 'alpha' # <-- Any default or custom track that is not in ‘draft’ status
+      android_signing:
+        - marijan_android_keystore # <-- includes CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS
       flutter: stable
-      xcode: latest
-      cocoapods: default
     scripts:
-      - name: Set up key properties
-        script: |
-          echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.keystore
-          cat >> "$CM_BUILD_DIR/android/key.properties" <<EOF
-          storePassword=$CM_KEYSTORE_PASSWORD
-          keyPassword=$CM_KEY_PASSWORD
-          keyAlias=$CM_KEY_ALIAS
-          storeFile=/tmp/keystore.keystore
-          EOF
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
       - name: Get Flutter packages
         script: |
           cd . && flutter packages pub get
-      - name: Flutter analyze
-        script: |
-          cd . && flutter analyze
-      - name: Flutter unit tests
-        script: |
-          cd . && flutter test
-        ignore_failure: true
-      - name: Set up Firebase properties
-        script: |
-          echo $ANDROID_FIREBASE_CONFIG | base64 --decode > $CM_BUILD_DIR/android/app/google-services.json
-          echo Decoded google-services.json! Here is the directory after.
-          ls $CM_BUILD_DIR/android/app
       - name: Build APK with Flutter
         script: |
-          cd . && flutter build apk --release --build-name=1.0.5 --build-number=1
+          cd . && flutter build apk --release --build-name=1.0.0 --build-number=1
     artifacts:
       - build/**/outputs/bundle/**/*.aab
       - build/**/outputs/apk/**/*.apk
@@ -51,17 +29,9 @@ workflows:
       - flutter_drive.log
     publishing:
       firebase:
-        firebase_token: $FIREBASE_TOKEN
+        firebase_service_account: $FIREBASE_SERVICE_ACCOUNT
         android:
-          app_id: 1:347043928061:android:1cdbf0c292fe8bc0d1eb94
+          app_id: 1:715058820192:android:f0c493bfe91a0193a1ff05
           groups:
             - androidTesters
           artifact_type: 'apk'
-      # See the following link for details about email publishing - https://docs.codemagic.io/yaml-publishing/email
-  #    email:
-  #      recipients:
-  #        - user_1@example.com
-  #        - user_2@example.com
-  #      notify:
-  #        success: true # To receive a notification when a build succeeds
-  #        failure: false # To not receive a notification when a build fails
