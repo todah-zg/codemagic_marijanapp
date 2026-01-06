@@ -1,18 +1,31 @@
-# Flutter core
+# Flutter wrapper & entry points
+-keep class io.flutter.app.** { *; }
+-keep class io.flutter.plugin.** { *; }
+-keep class io.flutter.util.** { *; }
+-keep class io.flutter.view.** { *; }
 -keep class io.flutter.** { *; }
--dontwarn io.flutter.**
+-keep class io.flutter.plugins.** { *; }
 
-# Your MainActivity
--keep class io.codemagic.marijanapp.MainActivity { *; }
+# Your specific MainActivity and package
+-keep class io.codemagic.marijanapp.** { *; }
+-keep class io.codemagic.** { *; }
 
-# Firebase (since you have firebase_core)
+# Firebase (very important – reflection heavy)
 -keep class com.google.firebase.** { *; }
--dontwarn com.google.firebase.**
-
-# General Android entry points
--keep class androidx.** { *; }
 -keep class com.google.android.gms.** { *; }
+-dontwarn com.google.firebase.**
 -dontwarn com.google.android.gms.**
 
-# If MultiDex is needed (common with Firebase)
+# AndroidX & general
+-keep class androidx.** { *; }
+-keep interface androidx.** { *; }
+
+# MultiDex
 -keep class androidx.multidex.** { *; }
+
+# Prevent obfuscation of generated Flutter classes
+-keep class io.flutter.embedding.** { *; }
+
+# General safety
+-dontwarn java.**
+-dontwarn javax.**
