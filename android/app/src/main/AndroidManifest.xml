@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.codemagic.marijanapp.codemagic_marijanapp">
+    package="io.codemagic.marijanapp">
    <application
         android:label="codemagic_marijanapp"
         android:name="${applicationName}"
