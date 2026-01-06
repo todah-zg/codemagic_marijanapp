@@ -1,6 +1,10 @@
-version 1.0.5
-- increased counter performance by 100%, doubling the amount of counted value in each step and cutting the number of steps necessary to reach very large numbers by half!
-- such great increase in performance explains the big bump in version number
+version 1.0.2
+- upgraded the entire platform and framework to the latest versions
+
+version 1.0.1
+- increased counter performance by 100%
+- doubled the amount of counted value in each step
+- decrease the number of steps necessary to reach very large numbers by half!
 
 version 1.0.0
 - fully implemented all the planned abilities
