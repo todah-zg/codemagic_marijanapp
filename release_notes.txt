@@ -1,3 +1,6 @@
+version 1.0.3
+- NEW: Permanency mode - by popular demand, the app no longer auto-closes but stays open until manually closed
+
 version 1.0.2
 - upgraded the entire platform and framework to the latest versions
 
