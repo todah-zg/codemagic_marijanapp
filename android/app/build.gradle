@@ -5,6 +5,9 @@ plugins {
     id "com.google.gms.google-services"
 }
 
+// Remove this line – it's duplicate and no longer needed in declarative setup
+// apply plugin: 'com.google.gms.google-services'
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -28,21 +31,18 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-
-apply plugin: 'com.google.gms.google-services'
-
-
 android {
     namespace 'io.codemagic.marijanapp'
     compileSdkVersion flutter.compileSdkVersion
-    
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        // Updated to Java 17 for modern Flutter/Gradle compatibility (your JDK 25 supports it)
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     sourceSets {
@@ -51,33 +51,45 @@ android {
 
     defaultConfig {
         applicationId "io.codemagic.marijanapp"
-        // minSdkVersion flutter.minSdkVersion
         minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        // Enable MultiDex (helps with Firebase and prevents method count issues in release)
+        multiDexEnabled true
     }
 
     signingConfigs {
-          release {
-              if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
-                  storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
-                  storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
-                  keyAlias System.getenv()["CM_KEY_ALIAS"]
-                  keyPassword System.getenv()["CM_KEY_PASSWORD"]
-              } else {
-                  keyAlias keystoreProperties['keyAlias']
-                  keyPassword keystoreProperties['keyPassword']
-                  storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-                  storePassword keystoreProperties['storePassword']
-              }
-          }
-      }
+        release {
+            if (System.getenv()["CI"]) { // CI=true is exported by Codemagic
+                storeFile file(System.getenv()["CM_KEYSTORE_PATH"])
+                storePassword System.getenv()["CM_KEYSTORE_PASSWORD"]
+                keyAlias System.getenv()["CM_KEY_ALIAS"]
+                keyPassword System.getenv()["CM_KEY_PASSWORD"]
+            } else {
+                def keystorePropertiesFile = rootProject.file("key.properties")
+                def keystoreProperties = new Properties()
+                if (keystorePropertiesFile.exists()) {
+                    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+                }
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+    }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Enable code shrinking/minification (good for APK size)
+            minifyEnabled true
+            shrinkResources true
+
+            // Use ProGuard/R8 rules (create proguard-rules.pro if missing)
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
             signingConfig signingConfigs.release
         }
     }
@@ -88,5 +100,6 @@ flutter {
 }
 
 dependencies {
-
+    // MultiDex library (required when multiDexEnabled true)
+    implementation 'androidx.multidex:multidex:2.0.1'
 }
