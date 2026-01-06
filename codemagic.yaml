@@ -5,6 +5,7 @@ workflows:
     environment:
       groups:
         - FIREBASE # <-- Includes FIREBASE_SERVICE_ACCOUNT
+        - GOOGLE # <-- Includes GOOGLE_SERVICES_JSON
       vars:
         CM_KEYSTORE_PATH: /tmp/keystore.keystore
         PACKAGE_NAME: 'io.codemagic.marijanapp' # <-- Put your package name here e.g. "io.codemagic.flutteryaml"
@@ -16,6 +17,12 @@ workflows:
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
+      - name: Load Firebase configuration
+        script: | 
+          #!/usr/bin/env sh
+          set -e # exit on first failed command
+          echo $GOOGLE_SERVICES_JSON > $CM_BUILD_DIR/android/app/google-services.json
+    
       - name: Get Flutter packages
         script: |
           cd . && flutter packages pub get
